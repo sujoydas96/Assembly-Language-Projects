@@ -1,29 +1,62 @@
-segment .data
-message db "Enter the year:", 0xa
-len equ $ -message
+section .data
 
-leapY db "It is a Leap Year",0xa
-lenY equ $ -leapY
+	msg db 'Checking the year: ' , 0xa
+    msglen equ $ -msg
 
-leapN db "It is not a Leap Year",0xa
-lenN equ $ -leapN
+	leapYear db ' is a leap year.', 0xa
+	leapYearLenght equ $- leapYear
 
-segment .bss
-year resb 5
+	noLeapYear db ' is not a leap year.', 0xa
+    noLeapYearLenght equ $ -noLeapYear
 
-segment .text
-    global _start
+    CheckYear dd '2004'
 
-_start:
-    mov edx, len
-    mov ecx, message
-    mov ebx, 1
-    mov eax, 4
-    int 0x80
-    
-    mov edx, 5
-    mov ecx, year
-    mov ebx, 2
-    mov eax, 3
-    
-    
+	section .text
+
+	    global main
+
+main:
+
+	    mov eax, 4           ;msg print
+	    mov ebx, 1
+	    mov ecx, msg
+	    mov edx, msglen
+	    int 0x80
+
+        mov eax, 4           ;print year
+	    mov ebx, 1
+	    mov ecx, CheckYear
+	    mov edx, 4
+	    int 0x80
+	    
+        mov eax, CheckYear
+        sub eax, '0'
+
+	    mov edx, 0
+	    mov ecx, 4      
+	    div ecx 
+
+	    cmp edx, 0
+	    jne NoLeapYear
+
+	    mov eax, 4
+	    mov ebx, 1
+	    mov ecx, leapYear
+	    mov edx, leapYearLenght
+	    int 0x80
+
+	    jmp Exit
+
+NoLeapYear:	         	
+	    mov eax, 4
+	    mov ebx, 1
+	    mov ecx, noLeapYear
+	    mov edx, noLeapYearLenght
+	    int 0x80
+
+	    jmp Exit
+Exit:
+
+	    mov eax, 1
+        mov ebx, 0
+        int 0x80
